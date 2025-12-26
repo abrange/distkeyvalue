@@ -1,0 +1,53 @@
+syntax = "proto3";
+package raft;
+
+service Raft {
+  rpc RequestVote(RequestVoteRequest) returns (RequestVoteReply);
+  rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesReply);
+  rpc InstallSnapshot(InstallSnapshotRequest) returns (InstallSnapshotReply);
+}
+
+message LogEntry {
+  int64 term = 1;
+  string key = 2;
+  string value = 3;
+}
+
+message RequestVoteRequest {
+  int64 term = 1;
+  string candidate_id = 2;
+  int64 last_idx = 3;
+  int64 last_term = 4;
+}
+
+message RequestVoteReply {
+  int64 term = 1;
+  bool vote_granted = 2;
+}
+
+message AppendEntriesRequest {
+  int64 term = 1;
+  string leader_id = 2;
+  int64 prev_idx = 3;
+  int64 prev_term = 4;
+  repeated LogEntry entries = 5;
+  int64 leader_commit = 6;
+}
+
+message AppendEntriesReply {
+  int64 term = 1;
+  bool success = 2;
+}
+
+message InstallSnapshotRequest {
+  int64 term = 1;
+  string leader_id = 2;
+  int64 snap_last_idx = 3;
+  int64 snap_last_term = 4;
+  map<string, string> kv = 5; // for learning; later you can switch to bytes
+}
+
+message InstallSnapshotReply {
+  int64 term = 1;
+  bool success = 2;
+}
